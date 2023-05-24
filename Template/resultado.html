@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    <h1>Resultado</h1>
+    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+
+    <script>
+        var xValues = [{% for data in x %}{{data}},{% endfor %}]
+        var yValues = [{% for data in y %}{{data}},{% endfor %}]
+        console.log(xValues);
+        console.log(yValues);
+        alert(xValues);
+        alert(yValues);
+
+        new Chart("myChart", {
+            type: "scatter",
+            data: {
+                datasets: [{
+                    labels: xValues,
+                    pointRadius: 4,
+                    pointBackgroundColor: "rgb(0,0,255)",
+                    data: yValues
+            }]
+        },
+        options: {
+            legend: {display: false},
+            scales: {   
+                xAxes: [{ticks: {min: 40, max:160}}],
+                yAxes: [{ticks: {min: 6, max:16}}],
+            }
+        }
+    });
+    </script>
+{% endblock %}

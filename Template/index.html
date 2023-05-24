@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block conteudo %}
+    {% if message and msg_status == 'verde' %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+
+        <!-- criar um html para mostrar seleção de campos -->
+        <!-- Escolha duas campos para exibir um gráfico:<br/> -->
+
+        {% if row_selected is not None and row_selected is not False %}
+            Selecione o campo para o valor do eixo y (coluna):<br/>
+            <form method="POST" id="form-checkbox">
+                <div style="padding: 10%" class="form_campo">
+                    {% csrf_token %}
+                    <input type="hidden" name="is-coluna" value="True">
+                    {% for campo in campos %}
+                        <input type="checkbox" id="checkbox" name="{{ campo }}" value="{{ campo }}" onchange="uncheck_other_checkboxes(this)">
+                        <label for="{{ campo }}">{{ campo }}</label><br/>
+                    {% endfor %}
+                    <button type="submit">Confirmar</button>
+                </div>
+            </form>
+        {% else %}
+            {% if column_selected is not None and column_selected is not False %}
+                <!-- render img grafico django -->
+                <!-- <img src="{% url 'plot_view' %}"><br/> -->
+                <img src="data:image/png;base64,{{ chart }}" alt="Gráfico"><br/>
+                chique UUH lala
+            {% else %}
+                Selecione o campo para o valor do eixo x (linha):<br/>
+                <form method="POST" id="form-checkbox">
+                    <div style="padding: 10%" class="form_campo">
+                        {% csrf_token %}
+                        <input type="hidden" name="is-linha" value="True">
+                        {% for campo in campos %}
+                            <input type="checkbox" id="checkbox" name="{{ campo }}" value="{{ campo }}" onchange="uncheck_other_checkboxes(this)">
+                            <label for="{{ campo }}">{{ campo }}</label><br/>
+                        {% endfor %}
+                        <button type="submit">Confirmar</button>
+                    </div>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        </p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
+
+    {% elif message and msg_status == 'vermelho' %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+
+    {% endif %}
+
+    <h2>Importar dados</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="arquivo" required>
+        <br/><button type="submit">Enviar</button>
+    </form>
+
+
+    <script>
+        function uncheck_other_checkboxes(clickedCheckbox) {
+            var checkboxes = document.getElementsByTagName('input');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].type == 'checkbox' && checkboxes[i] != clickedCheckbox) {
+                    checkboxes[i].checked = false;
+                }
+            }
+        }
+        </script>
+{% endblock %}
