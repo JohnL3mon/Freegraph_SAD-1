@@ -1,13 +1,8 @@
 from django.shortcuts import render
-import matplotlib.pyplot as plt
-import numpy as np, os
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.animation as anim
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import pandas as pd
-from io import StringIO
+from io import StringIO, BytesIO
+import pandas as pd, base64
 
 
 class DadosSessao():
@@ -52,6 +47,9 @@ def index(request):
 					return render(request, 'index.html', context = {'message': msg, 'msg_status': 'verde', 'campos': DadosSessao.campos, 'row_selected': True})
 
 				elif 'is-coluna' in data:
+					# perguntar se precisa adicionar alguma condição no gráfico
+					# pode ter várias condições (loop até o usuário dizer não)
+
 					# Lógica para exibir gráfico
 					for item in request.POST:
 						for campo in DadosSessao.campos:
@@ -62,8 +60,25 @@ def index(request):
 								x = DadosSessao.dados_linha
 								y = DadosSessao.dados_coluna
 
-								context = {'x': x, 'y': y}
-								return render(request, 'resultado.html', context)
+								fig = Figure()
+								fig.set_size_inches(5, 5)
+								axis = fig.add_subplot(1, 1, 1)
+
+								axis.plot(x, y)
+
+								fig.suptitle('Gráfico', fontsize=15)
+								axis.set_xlabel(DadosSessao.linha_selecionada)
+								axis.set_ylabel(DadosSessao.coluna_selecionada)
+
+								canvas = FigureCanvas(fig)
+								buffer = BytesIO()
+								canvas.print_png(buffer)
+								buffer.seek(0)
+
+								graph = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+								context = {'x': x, 'y': y, 'graph': graph, 'grafico_gerado': True}
+								return render(request, 'index.html', context)
 		except Exception as e:
 			print(e) # Reverse for 'plot_view' not found. 'plot_view' is not a valid view function or pattern name.
 			return render(request, 'index.html', context = {'message': f'{e}', 'msg_status': 'vermelho'})

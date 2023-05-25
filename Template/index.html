@@ -26,8 +26,6 @@
             {% if column_selected is not None and column_selected is not False %}
                 <!-- render img grafico django -->
                 <!-- <img src="{% url 'plot_view' %}"><br/> -->
-                <img src="data:image/png;base64,{{ chart }}" alt="Gráfico"><br/>
-                chique UUH lala
             {% else %}
                 Selecione o campo para o valor do eixo x (linha):<br/>
                 <form method="POST" id="form-checkbox">
@@ -50,8 +48,13 @@
         <div class="alert alert-danger" role="alert">
             {{ message }}
         </div>
-
     {% endif %}
+
+
+    {% if grafico_gerado is not None and grafico_gerado is not False %}
+        <img src="data:image/png;base64,{{ graph }}" alt="Gráfico"><br/>
+    {% endif %}
+
 
     <h2>Importar dados</h2>
     <form method="POST" enctype="multipart/form-data">
