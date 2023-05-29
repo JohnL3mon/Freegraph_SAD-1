@@ -1,48 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block conteudo %}
     {% if message and msg_status == 'verde' %}
-        <div class="alert alert-success" role="alert">
-            {{ message }}
-        </div>
+    <script>
+        aparece.style.display = "block";
+    </script>
+
+    <!-- Modal -->
+    <div id="modal_background" align="center"><br>
+        <div id="modal_grafico">
+            <div id="modal_topo">
+                <span id="modal_span">Informação</span>
+                <button id="modal_exit" onclick="chama_modal()">X</button>
+
+
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
 
         <!-- criar um html para mostrar seleção de campos -->
         <!-- Escolha duas campos para exibir um gráfico:<br/> -->
 
         {% if row_selected is not None and row_selected is not False %}
-            Selecione o campo para o valor do eixo y (coluna):<br/>
+            
             <form method="POST" id="form-checkbox">
-                <div style="padding: 10%" class="form_campo">
+                
+                <div style="display: block;" class="form_campo">
+                    <p class="selecione_index">Selecione o campo para o valor do eixo y (coluna):</p>
                     {% csrf_token %}
                     <input type="hidden" name="is-coluna" value="True">
                     {% for campo in campos %}
-                        <input type="checkbox" id="checkbox" name="{{ campo }}" value="{{ campo }}" onchange="uncheck_other_checkboxes(this)">
-                        <label for="{{ campo }}">{{ campo }}</label><br/>
+                        <div class="col-xs-12 col-sm-5">
+                        <input class="radio_Y" style="margin: auto;" type="checkbox" id="checkbox"  name="{{ campo }}" value="{{ campo }}" onchange="uncheck_other_checkboxes(this)" onclick="habilitarBotao()">
+                        <label for="{{ campo }}" style="width: 100px; text-align: left;">{{ campo }}</label>
+                        </div>
                     {% endfor %}
-                    <button type="submit">Confirmar</button>
+                    <br/>
+                    <div>
+                    <button id="confirma_mapa" class="button_index" type="submit" style="width: 500px; max-width: 90%;">Confirmar</button>
+                    </div>
+                    <br/>
                 </div>
             </form>
+
         {% else %}
             {% if column_selected is not None and column_selected is not False %}
                 <!-- render img grafico django -->
                 <!-- <img src="{% url 'plot_view' %}"><br/> -->
             {% else %}
-                Selecione o campo para o valor do eixo x (linha):<br/>
                 <form method="POST" id="form-checkbox">
-                    <div style="padding: 10%" class="form_campo">
+
+                    <div class="form_campo">
+                        <p class="selecione_index">Selecione o campo para o valor do eixo x (linha):</p>
                         {% csrf_token %}
                         <input type="hidden" name="is-linha" value="True">
                         {% for campo in campos %}
+                        <div class="col-xs-12 col-sm-5">
                             <input type="checkbox" id="checkbox" name="{{ campo }}" value="{{ campo }}" onchange="uncheck_other_checkboxes(this)">
-                            <label for="{{ campo }}">{{ campo }}</label><br/>
+                            <label for="{{ campo }}"style="width: 100px; text-align: left;">{{ campo }}</label><br/>
+                        </div>
                         {% endfor %}
-                        <button type="submit">Confirmar</button>
+                        <div>
+                        <button class="button_index" type="submit" style="width: 500px; max-width: 90%;" type="submit" data-toggle="modal">Próximo</button>
+                        </div>
+                        <br/>
                     </div>
                 </form>
             {% endif %}
         {% endif %}
+        </div>
+        </div>
+        </div>
 
-        </p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p></p>
 
     {% elif message and msg_status == 'vermelho' %}
         <div class="alert alert-danger" role="alert">
@@ -52,17 +82,49 @@
 
 
     {% if grafico_gerado is not None and grafico_gerado is not False %}
-        <img src="data:image/png;base64,{{ graph }}" alt="Gráfico"><br/>
+    <script>
+        aparece.style.display = "block";
+    </script>
+    <!-- Modal -->
+    <div id="modal_background" align="center"><br>
+        <div id="modal_grafico">
+            <div id="modal_topo">
+                <span id="modal_span">Informação</span>
+                <button id="modal_exit" onclick="chama_modal()">X</button><br/>
+                <img src="data:image/png;base64,{{ graph }}" alt="Gráfico"><br/><br/>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
+    <!-- DIV Principal -->
+    <div class="form_index" align="center">
 
-    <h2>Importar dados</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="arquivo" required>
-        <br/><button type="submit">Enviar</button>
-    </form>
+        <!-- Foto da logo -->
+        <img id="img_index" src="{% static './assets/logo_freegraph02.png' %}">
+        <h2 id="titulo_input">Importar Dados</h2>
 
+        <!-- Form com botões de abrir e enviar -->
+            <form class="form_index" id="form_central" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input id="input_index" type="file" name="arquivo" required><br/>
+                <button class="button_index" type="submit" data-toggle="modal" data-target="#modalGrafico">Enviar</button>
+            </form>
+        <p id="descricao_index">Bem vindo ao <b>FreeGraph</b>, site onde você pode abrir e plotar seu dataset em um gráfico 
+                                limitado em dois valores definidos pelo usuário ao abrir seu dataset.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="rodape">
+        <div class="descricao_rodape">
+            <p class="nomes_rodape">Ahmad Said Abdouni RA:10104269<br>
+                                    Alice Pinna Salgado RA:1010495<br>
+                                    João Vitor dos Santos Lima RA:10076537<br>
+                                    Matheus Carvalho de Moura RA:00951683
+            </p>
+            <p class="direitos_rodape">FreeGraph LTDA©</p>
+        </div>
+    </footer>
 
     <script>
         function uncheck_other_checkboxes(clickedCheckbox) {
@@ -73,5 +135,18 @@
                 }
             }
         }
-        </script>
+    </script>
+
+    <script>
+        function chama_modal(){
+            var aparece = document.getElementById("modal_background");
+
+            if (aparece.style.display == "none"){
+                aparece.style.display = "block";
+            }else{
+                aparece.style.display = "none";
+            }
+        }
+    </script>
+
 {% endblock %}
